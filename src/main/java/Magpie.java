@@ -1,3 +1,5 @@
+import java.util.Locale;
+
 /**
  * A program to carry on conversations with a human user.
  * This is the initial version that:  
@@ -31,17 +33,51 @@ public class Magpie
     public String getResponse(String statement)
     {
         String response = "";
-        if (statement.indexOf("no") >= 0)
+        if (findWord(statement,"I want") >= 0){
+            response = transformIWantStatement(statement);
+        }
+        else if (findWord(statement,"I") >= 0 || findWord(statement,"you") > findWord(statement,"I")){
+            response = transformIYouStatement(statement);
+        }
+        else if (findWord(statement, "I want to") >= 0){
+            response = transformIWantToStatement(statement);
+        }
+        else if (findWord(statement, "you")>= 0 && findWord(statement, "me")> findWord(statement, "you")){
+            response = transformYouMeStatement(statement);
+        }
+        else if (findWord(statement,"I") >= 0 && findWord(statement, "that") > findWord(statement, "I")){
+            response = transform_I_That_statement(statement);
+        }
+         else if (statement.indexOf("no") >= 0)
         {
             response = "Why so negative?";
         }
-        else if (statement.indexOf("mother") >= 0
+         else if (statement.length() > 30){
+             response = "Bro ion even know what ur sayin cuz its too long";
+        }
+        else if (statement.indexOf(findWord(statement,"mother")) >= 0
                 || statement.indexOf("father") >= 0
                 || statement.indexOf("sister") >= 0
                 || statement.indexOf("brother") >= 0)
         {
             response = "Tell me more about your family.";
         }
+        else if (statement.indexOf("cat") >= 0
+                || statement.indexOf("dog") >= 0)
+        {
+            response = "tell me more about your stupid pets.";
+        }
+        else if (statement.indexOf("Mr") >= 0
+                || statement.indexOf("teacher") >= 0) {
+            response = "tell me more about your teachers.";
+        }
+        else if (statement.trim()=="") {
+            response = "say something";
+        }
+        else if (statement.indexOf("sport") >= 0) {
+            response = "tell me more about your sports.";}
+        else if (statement.indexOf("no") >= 0) {
+            response = "why not";}
         else
         {
             response = getRandomResponse();
@@ -88,12 +124,37 @@ public class Magpie
     // of str or word
 
     // The method returns the index of the first character in word
-    // if it is found, and returns -1 otherwise. 
+    // if it is found, and returns -1 otherwise.
+    //the word is at the start, and there is a space after the last letter, the word is at the end, and there's a space
+    // before the first letter, or there is a space before the first letter and after the last letter.
     public int findWord(String str, String word) {
-        return -1;
+        str = str.toLowerCase();
+        word = word.toLowerCase();
+        int start_index = str.indexOf(word);
+        int end_index = str.indexOf(word)+word.length();
+        //the index of the start of the word has to be 0, and the character at the end of the word has to be ' '
+        if(str.contains(word)) {
+            if (start_index == 0 && str.charAt(str.indexOf(word) + word.length()) == ' ') {
+                return start_index;
+            }
+            //the index of the end of the word has to be str.length()-1, and the character at the start of the word has to
+            // be ' '
+            else if (str.charAt(str.indexOf(word) - 1) == ' ' && end_index == str.length() ) {
+                return start_index;
+            }
+            //the character at the start of the word has to be ' ' and the character at the end of the word has to be ' '
+            else if (str.charAt(str.indexOf(word) - 1) == ' ' && str.charAt(str.indexOf(word) + word.length()) == ' ') {
+                return start_index;
+            }
+            else{
+                return -1;
+            }
+        }
+        // none of the above cases were true so just return -1
+        else{
+            return -1;
+        }
     }
-
-    
     // We will work on the following methods later!
 
     /**
@@ -104,8 +165,11 @@ public class Magpie
      */
     public String transformIWantStatement(String statement)
     {
-        //your code here
-        return "";
+        String what_I_want = "";
+        //what i want is a substring starting from after "I want" and ending at the next space.
+        what_I_want = statement.substring(statement.indexOf("I want")+7, statement.length());
+        System.out.println(what_I_want);
+            return "Would you really be happy if you had " + what_I_want + '?';
     }
 
     /**
@@ -116,8 +180,9 @@ public class Magpie
      */
     public String transformIYouStatement(String statement)
     {
-        //your code here
-        return "";
+        String something = "";
+        something = statement.substring(statement.indexOf('I')+2, statement.indexOf("you")-1);
+        return "Why do you " + something + " me?";
     }
 
     /**
@@ -128,8 +193,11 @@ public class Magpie
      */
     public String transformIWantToStatement(String statement)
     {
-        // your code here
-        return "";
+        String I_want_to = "";
+        //what i want is a substring starting from after "I want to" and ending at the next space.
+        I_want_to = statement.substring(statement.indexOf("I want to")+10, statement.length());
+        System.out.println(I_want_to);
+        return "What would it mean to " + I_want_to + '?';
     }
 
 
@@ -143,7 +211,15 @@ public class Magpie
      */
     public String transformYouMeStatement(String statement)
     {
-        // your code here
-        return "";
+        String something = "";
+        something = statement.substring(statement.indexOf("you")+4, statement.indexOf("me")-1);
+        return "What makes you think that I " + something + " you?";
+    }
+    public String transform_I_That_statement(String statement){
+        String something = "";
+        something = statement.substring(statement.indexOf("I") + 2, statement.indexOf("that")-2);
+        return "why do you " + something + " that?";
     }
 }
+
+
